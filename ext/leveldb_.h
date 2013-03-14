@@ -2,6 +2,7 @@
 #define LEVELDB__H
 
 #include <string>
+#include <leveldb/db.h>
 
 namespace leveldb
 {
@@ -14,7 +15,7 @@ public:
 
 	std::string get(std::string key);
 	bool put(std::string key, std::string value);
-	bool del(std::string key);
+	bool delete_(std::string key);
 private:
 	leveldb::DB* db_;
 

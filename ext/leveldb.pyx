@@ -1,12 +1,16 @@
 # distutils: language = c++
-# distutils: sources = leveldb/leveldb_.cpp
+# distutils: sources = ext/leveldb_.cpp
+
+from libcpp.string cimport string
+from libcpp cimport bool
 
 cdef extern from "leveldb_.h" namespace "leveldb":
 	cdef cppclass LevelDB_:
 		LevelDB_(string) except + 
 		string get(string)
 		bool put(string, string)
-		bool del(string)
+		bool delete_(string)
+
 
 cdef class LevelDB:
 	cdef LevelDB_ *thisptr
@@ -22,5 +26,5 @@ cdef class LevelDB:
 		return self.thisptr.put(key, value)
 
 	def delete(self, key):
-		return self.thisptr.del(key)
+		return self.thisptr.delete_(key)
 
