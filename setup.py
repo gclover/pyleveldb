@@ -1,5 +1,4 @@
 
-from distutils.core import setup
 from setuptools import setup, find_packages
 from Cython.Build import cythonize
 from distutils.extension import Extension
@@ -36,8 +35,11 @@ def build_leveldb():
 	os.system(make_cmd)
 	libso = glob.glob('deps/leveldb*/libleveldb.so.*')[0]
 	destlibso = glob.glob('deps/leveldb*/')[0] + '/libleveldb.so'
-	#os.unlink(destlibso)
-	#shutil.copy(libso, destlibso)
+	for dest in [destlibso]:
+		if os.path.exists(dest):	
+			os.unlink(dest)
+		shutil.copy(libso, dest)
+
 
 def main():
 	if len(sys.argv) >= 2 and sys.argv[1] == 'build_deps':
@@ -52,9 +54,6 @@ def main():
 	extra_compile_args = ['-I./%s/include/' % leveldb_path, '-shared']
 	extra_link_args = ['-L%s' % leveldb_path, '-lleveldb', '-lpthread', '-Wl,--rpath=.']
 
-	print '>>'
-	print find_packages()
-	print '<<'
 	setup(
 		name = "leveldb",
 		version = '0.0.1',
@@ -62,7 +61,7 @@ def main():
 		packages = find_packages(),
 		#zip_safe = False,
 
-		data_files = [('', glob.glob('deps/leveldb*/libleveldb.so*'))],
+		data_files = [('', glob.glob('deps/leveldb*/libleveldb.so'))],
 
 		description = "leveldb python binding",
 		author = "gclover",
@@ -75,7 +74,7 @@ def main():
 
 		cmdclass = {'build_ext' : build_ext},
 		ext_modules = [
-			Extension('leveldb', 
+			Extension('leveldb_', 
 				['ext/leveldb.pyx'] + glob.glob('ext/*.cpp'),
 				language = 'c++',
 				extra_compile_args = extra_compile_args,
