@@ -13,11 +13,14 @@ public:
 	LevelDB_(std::string filename);
 	~LevelDB_();
 
-	std::string get(std::string key);
+	bool get(std::string key, std::string& value);
 	bool put(std::string key, std::string value);
 	bool delete_(std::string key);
+	
+	std::string status();
 private:
 	leveldb::DB* db_;
+	leveldb::Status status_;
 
 };
 

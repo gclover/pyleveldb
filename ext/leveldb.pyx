@@ -7,9 +7,10 @@ from libcpp cimport bool
 cdef extern from "leveldb_.h" namespace "leveldb":
 	cdef cppclass LevelDB_:
 		LevelDB_(string) except + 
-		string get(string)
+		bool get(string, string&)
 		bool put(string, string)
 		bool delete_(string)
+		string status()
 
 
 cdef class LevelDB:
@@ -20,7 +21,12 @@ cdef class LevelDB:
 		del self.thisptr
 
 	def get(self, key):
-		return self.thisptr.get(key)
+		cdef string value = ''
+		res = self.thisptr.get(key, value)
+		if res:
+			return value
+		else:
+			return None
 
 	def put(self, key, value):
 		return self.thisptr.put(key, value)

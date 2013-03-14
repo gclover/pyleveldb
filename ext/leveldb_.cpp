@@ -7,23 +7,35 @@ LevelDB_::LevelDB_(std::string filename)
 {
 	leveldb::Options options;
 	options.create_if_missing = true;
-	leveldb::Status status = leveldb::DB::Open(options, filename, &db_);
+	status_ = leveldb::DB::Open(options, filename, &db_);
 }
 
 LevelDB_::~LevelDB_()
-{}
-
-std::string LevelDB_::get(std::string key)
 {
-	return "";
+	if (db_)
+		delete db_;
+}
+
+bool LevelDB_::get(std::string key, std::string& value)
+{
+	status_ = db_->Get(leveldb::ReadOptions(), key, &value);
+	return status_.ok();
 }
 
 bool LevelDB_::put(std::string key, std::string value)
 {
-	return true;
+	status_ = db_->Put(leveldb::WriteOptions(), key, value);
+	return status_.ok();	
 }
 
 bool LevelDB_::delete_(std::string key)
 {
-	return true;
+	status_ = db_->Delete(leveldb::WriteOptions(), key);
+	return status_.ok();
 }
+
+std::string LevelDB_::status()
+{
+	return status_.ToString();
+}
+
